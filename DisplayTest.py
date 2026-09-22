@@ -1,3 +1,5 @@
+# BEFORE YOU CAN RUN ANY OF THIS ON A RASPBERRY PI, YOU MUST BE ON A PYTHON VM, YOU CAN DO THIS VIA TYPING IN TERMINAL "~/env/bin/activate"
+
 import sys
 import cv2
 import digitalio
