@@ -43,7 +43,7 @@ Disp1 = st7789.ST7789(
 	cs=cs_pin1,
 	dc=dc_pin,
 	rst=reset_pin,
-	baudrate=32000000,
+	baudrate=64000000,
 	width=240,
 	height=320,
 	x_offset=0,
@@ -55,7 +55,7 @@ Disp2 = st7789.ST7789(
 	cs=cs_pin2,
 	dc=dc_pin,
 	rst=reset_pin,
-	baudrate=32000000,
+	baudrate=64000000,
 	width=240,
 	height=320,
 	x_offset=0,
@@ -104,11 +104,26 @@ try:
 	while True:
 		frame1 = cam1.capture_array()
 		img1 = Image.fromarray(frame1)
+		
+		#some code is needed to fix the hardware, the display was reading as BRG instead of RGB
+		#What this code does is split the BGR snd aligns it back to RGB
+		r, g, b, = img1.split()
+		#this merges them back together
+		img1 = Image.merge("RGB", (b, g, r))
+		
 		Disp1.image(img1)
 		#dual mode again as the fallback stuff
 		if dual_mode:
 			frame2 = cam2.capture_array()
 			img2 = Image.fromarray(frame2)
+			
+			#some code is needed to fix the hardware, the display was reading as BRG instead of RGB
+			#What this code does is split the BGR snd aligns it back to RGB
+			r, g, b, = img2.split()
+			#this merges them back together
+			img2 = Image.merge("RGB", (b, g, r))
+			
+			
 			Disp2.image(img2)
 		else:
 			Disp2.image(img1)
