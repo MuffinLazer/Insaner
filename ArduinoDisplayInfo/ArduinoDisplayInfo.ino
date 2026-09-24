@@ -21,8 +21,8 @@ void loop() {
   if (combined == 0) {
     Serial.print("TEMPERATURE: ");
     Serial.print(temperature);
-    Serial.print(" C\tHUMIDITY: ");
+    Serial.print("C HUMIDITY: ");
     Serial.print(humidiy);
-    Serial.println(" %");
+    Serial.println("%");
   }
 }

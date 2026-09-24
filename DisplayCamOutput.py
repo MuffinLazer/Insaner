@@ -8,6 +8,7 @@ import board
 from PIL import Image, ImageDraw, ImageFont
 import adafruit_rgb_display.st7789 as st7789
 from picamera2 import Picamera2
+import serial
 #All the libarys i need
 
 
@@ -33,10 +34,12 @@ dc_pin.direction = digitalio.Direction.OUTPUT
 reset_pin = digitalio.DigitalInOut(board.D24)
 reset_pin.direction = digitalio.Direction.OUTPUT
 
+sir = serial.Serial('/dev/ttyACM0', 9600, timeout=0.01)
+#sir is what we capture from the arduino, /dev/ttyACM0is the port that the arduino speaks through
 
+title = "INSANER: INITLIZING"
+#this is for the first boot up before cams boot up
 
-
-FPS_BAUDRATE=32000000
 
 Disp1 = st7789.ST7789(
 	spi,
@@ -66,6 +69,18 @@ Disp2 = st7789.ST7789(
 w1, h1,= Disp1.width, Disp1.height
 w2, h2 = Disp2.width, Disp2.height
 
+font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+font = ImageFont.truetype(font_path, 20)
+
+img = Image.new("RGB", (w1,h1), color="black")
+draw = ImageDraw.Draw(img)
+draw.rectangle([0,0, w1,w2], fill=(0,0,0))
+draw.text((0, 130), f"{title}", font=font, fill=(0,255,255))
+
+Disp1.image(img) 
+Disp2.image(img) 
+
+
 # W Larp
 print("INITIALZING CAMS")
 
@@ -94,16 +109,36 @@ if dual_mode:
 	cam2.configure(cam2.create_preview_configuration(main={"format": "RGB888", "size": (w1, h1)}))
 	cam2.start()
 
-#sleeping system so cameras can warm up because amazing said they should :P
-time.sleep(1.0)
+#sleeping system so cameras can warm up because amazon said they should :P
+time.sleep(2.0)
 print("SYSTEM: ONLINE")
 
+sensortxt = "DATA NOT FOUND"
+font = ImageFont.load_default() #loading new font
 
-#captures one frame at a time and displays it to the lcd screens, this is the best method i could come up with at the time with these kinda cams and displays
+
+#This makes a combined image with overlay brush were everything below overlay brush will apply to overlay
+Overlay = Image.new("RGBA", (w1, h1), (0,0,0,0))
+OverlayBrush = ImageDraw.Draw(Overlay) 
+
+OverlayBrush.rectangle([5, 10, 230, 35], fill=(0,0,0,50))
+
+
 try: 
-	while True:
+	while True: # This while setup checks for new data
+		if sir.in_waiting > 0:
+			try: 
+				line = sir.readline().decode('utf-8').strip()
+				if line:
+					sensortxt = line
+					print("DATA CAPTURED: ", sensortxt)
+			except Exception:
+				pass
+				
+		#captures one frame at a time and displays it to the lcd screens, this is the best method i could come up with at the time with these kinda cams and displays		
 		frame1 = cam1.capture_array()
 		img1 = Image.fromarray(frame1)
+		
 		
 		#some code is needed to fix the hardware, the display was reading as BRG instead of RGB
 		#What this code does is split the BGR snd aligns it back to RGB
@@ -111,91 +146,50 @@ try:
 		#this merges them back together
 		img1 = Image.merge("RGB", (b, g, r))
 		
-		Disp1.image(img1)
+			
+		#this is an overlay over the camera image stream to allow arduino data to be put in
+		img1 = img1.convert("RGBA")
+		img1 = Image.alpha_composite(img1, Overlay)
+		
+		
+		#This places text from serial/arduino where the overlay is
+		draw1 = ImageDraw.Draw(img1)
+		draw1.text((20, 15), f"Data: {sensortxt}", font=font, fill=(0,255,255))
+	
+	
+		Disp1.image(img1) #displays final image to the screen 
 		#dual mode again as the fallback stuff
-		if dual_mode:
+		if dual_mode:		
 			frame2 = cam2.capture_array()
 			img2 = Image.fromarray(frame2)
+	
 			
-			#some code is needed to fix the hardware, the display was reading as BRG instead of RGB
-			#What this code does is split the BGR snd aligns it back to RGB
+			#this is incase the display swaps for some reason
+			#img2 =img2.transpose(Image.ROTATE_180)
+	
+			
 			r, g, b, = img2.split()
-			#this merges them back together
 			img2 = Image.merge("RGB", (b, g, r))
 			
 			
+			img2 = img2.convert("RGBA")
+			img2 = Image.alpha_composite(img2, Overlay)
+			
+			
+			draw2 = ImageDraw.Draw(img2)
+			draw2.text((20, 15), f"Data: {sensortxt}", font=font, fill=(0,255,255))
+	
+	
 			Disp2.image(img2)
 		else:
 			Disp2.image(img1)
 
-
-
-
-
-#cam1 = cv2.VideoCapture(0)
-	
-#cam2 = cv2.VideoCapture(1)
-	
-	
-#if not cam2.isOpened():
-#	print("Secondary camera not found, initializing fallback display")
-#	cam2 = cam1
-	
-#if not cam1.isOpened():
-#	print("CRITICAL PROGRAM ERRORS, SHUTTING DOWN")
-#	sys.exit()
-#print("LIVESTREAM: ONLINE")
-
-#try: 
-#	while True:
-#	# display 1
-#		ret1, frame1 = cam1.read()
-#		#reading cam frames
-#		if ret1:
-#			#converts colors to rgb
-#			frame1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2RGB)
-#			
-#			frame1_resized = cv2.resize(frame1, (w1, h1))
-#			#converts the size to fir properly
-#			
-#			#Data type converstion from numpy array to pillow image
-#			img1 = Image.fromarray(frame1_resized)
-#			
-#			Disp1.image(img1)
-#		ret2, frame2 = cam2.read()
-#		if ret2:
-#			frame2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2RGB)
-#			frame2_resized = cv2.resize(frame2, (w2, h2))
-#			img2 = Image.fromarray(frame2_resized)
-#			Disp2.image(img2)
-
-
 #this is so you can shut it down
 except KeyboardInterrupt:
 	print("HALTING CAMERA STREAMS")
-	cam1.release()
+	cam1.stop()
 	#this is because we made them overlay earilier
 	if cam2 is not cam1:
-		cam2.release()
+		cam2.stop()
 	print("PROCCESES STOPED")
 		# W larps
-	
-	
-# Fallback programs to help error catching
-
-#image1 = Image.new("RGB", (Disp1.width, Disp1.height))
-#draw1 = ImageDraw.Draw(image1)
-#draw1.rectangle((0, 0, Disp1.width, Disp1.height), fill=(255, 0, 0))
-#font = ImageFont.load_default()
-#draw1.text((30,40), "pi yadda yadda 1", font=font, fill=(255,225,225))
-
-
-#image2 = Image.new("RGB", (Disp2.width, Disp2.height))
-#draw2 = ImageDraw.Draw(image2)
-#draw2.rectangle((0, 0, Disp2.width, Disp2.height), fill=(255, 0, 0))
-#draw2.text((30,40), "pi yadda yadda 2", font=font, fill=(255,225,225))
-
-
-#Disp1.image(image1)
-#Disp2.image(image2)
-#print("Working!")
