@@ -165,7 +165,7 @@ try:
 	
 			
 			#this is incase the display swaps for some reason
-			img2 = img2.transpose(Image.ROTATE_180)
+			# img2 = img2.transpose(Image.ROTATE_180)
 	
 			
 			r, g, b, = img2.split()
