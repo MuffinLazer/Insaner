@@ -75,7 +75,7 @@ font = ImageFont.truetype(font_path, 20)
 img = Image.new("RGB", (w1,h1), color="black")
 draw = ImageDraw.Draw(img)
 draw.rectangle([0,0, w1,w2], fill=(0,0,0))
-draw.text((0, 130), f"{title}", font=font, fill=(0,255,255))
+draw.text((0, 130), f"{title}", font=font, fill=(20,150,250))
 
 Disp1.image(img) 
 Disp2.image(img) 
@@ -121,7 +121,7 @@ font = ImageFont.load_default() #loading new font
 Overlay = Image.new("RGBA", (w1, h1), (0,0,0,0))
 OverlayBrush = ImageDraw.Draw(Overlay) 
 
-OverlayBrush.rectangle([5, 10, 230, 35], fill=(0,0,0,50))
+OverlayBrush.rectangle([5, 10, 230, 35], fill=(0,0,0,150))
 
 
 try: 
@@ -154,7 +154,7 @@ try:
 		
 		#This places text from serial/arduino where the overlay is
 		draw1 = ImageDraw.Draw(img1)
-		draw1.text((20, 15), f"Data: {sensortxt}", font=font, fill=(0,255,255))
+		draw1.text((20, 15), f"DATA: {sensortxt}", font=font, fill=(20,150,250))
 	
 	
 		Disp1.image(img1) #displays final image to the screen 
@@ -165,7 +165,7 @@ try:
 	
 			
 			#this is incase the display swaps for some reason
-			#img2 =img2.transpose(Image.ROTATE_180)
+			img2 = img2.transpose(Image.ROTATE_180)
 	
 			
 			r, g, b, = img2.split()
@@ -177,7 +177,7 @@ try:
 			
 			
 			draw2 = ImageDraw.Draw(img2)
-			draw2.text((20, 15), f"Data: {sensortxt}", font=font, fill=(0,255,255))
+			draw2.text((20, 15), f"DATA: {sensortxt}", font=font, fill=(20,150,250))
 	
 	
 			Disp2.image(img2)
@@ -191,5 +191,5 @@ except KeyboardInterrupt:
 	#this is because we made them overlay earilier
 	if cam2 is not cam1:
 		cam2.stop()
-	print("PROCCESES STOPED")
+	print("PROCESS HALTED")
 		# W larps
