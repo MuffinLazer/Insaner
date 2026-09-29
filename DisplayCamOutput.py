@@ -9,6 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 import adafruit_rgb_display.st7789 as st7789
 from picamera2 import Picamera2
 import serial
+from libcamera import Transform
 #All the libarys i need
 
 
@@ -99,6 +100,7 @@ try:
 except Exception:
 	print("CRITICAL ERROR ON CAMERA TWO, FALLBACK.")
 	dual_mode = False
+	
 			
 
 #since we are using raw ribbin cables, formatting is needed to convert the color and sizing
@@ -146,7 +148,9 @@ try:
 		#this merges them back together
 		img1 = Image.merge("RGB", (b, g, r))
 		
-			
+		#this is incase the display swaps for some reason
+		# img1 = img1.transpose(Image.ROTATE_180)
+				
 		#this is an overlay over the camera image stream to allow arduino data to be put in
 		img1 = img1.convert("RGBA")
 		img1 = Image.alpha_composite(img1, Overlay)
@@ -155,6 +159,7 @@ try:
 		#This places text from serial/arduino where the overlay is
 		draw1 = ImageDraw.Draw(img1)
 		draw1.text((20, 15), f"DATA: {sensortxt}", font=font, fill=(20,150,250))
+	
 	
 	
 		Disp1.image(img1) #displays final image to the screen 
@@ -189,7 +194,7 @@ except KeyboardInterrupt:
 	print("HALTING CAMERA STREAMS")
 	cam1.stop()
 	#this is because we made them overlay earilier
-	if cam2 is not cam1:
+	if cam1 is not cam2:
 		cam2.stop()
 	print("PROCESS HALTED")
 		# W larps
