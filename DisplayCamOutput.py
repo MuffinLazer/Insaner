@@ -78,6 +78,8 @@ draw = ImageDraw.Draw(img)
 draw.rectangle([0,0, w1,w2], fill=(0,0,0))
 draw.text((0, 130), f"{title}", font=font, fill=(20,150,250))
 
+
+
 Disp1.image(img) 
 Disp2.image(img) 
 
@@ -100,15 +102,22 @@ try:
 except Exception:
 	print("CRITICAL ERROR ON CAMERA TWO, FALLBACK.")
 	dual_mode = False
-	
-			
 
-#since we are using raw ribbin cables, formatting is needed to convert the color and sizing
-cam1.configure(cam1.create_preview_configuration(main={"format": "RGB888", "size": (w1, h1)}))
+# Grabs the template for this varriable 
+config1 = cam1.create_preview_configuration()
+#rresizes the display to the camera instead of the other way around
+config1["main"]["size"] = (w1, h1)
+config1["main"]["format"] = "RGB888"
+#boot up things
+cam1.configure(config1)
 cam1.start()
-#dual mode from eariler, just sets up both cams
+
 if dual_mode:
-	cam2.configure(cam2.create_preview_configuration(main={"format": "RGB888", "size": (w1, h1)}))
+	config2 = cam2.create_preview_configuration()
+#same thing over here
+	config2["main"]["size"] = (w1, h1)
+	config2["main"]["format"] = "RGB888"
+	cam2.configure(config2)
 	cam2.start()
 
 #sleeping system so cameras can warm up because amazon said they should :P
@@ -147,9 +156,6 @@ try:
 		r, g, b, = img1.split()
 		#this merges them back together
 		img1 = Image.merge("RGB", (b, g, r))
-		
-		#this is incase the display swaps for some reason
-		# img1 = img1.transpose(Image.ROTATE_180)
 				
 		#this is an overlay over the camera image stream to allow arduino data to be put in
 		img1 = img1.convert("RGBA")
@@ -160,7 +166,8 @@ try:
 		draw1 = ImageDraw.Draw(img1)
 		draw1.text((20, 15), f"DATA: {sensortxt}", font=font, fill=(20,150,250))
 	
-	
+		#this is incase the display swaps for some reason
+		#img1 = img1.transpose(Image.ROTATE_180)
 	
 		Disp1.image(img1) #displays final image to the screen 
 		#dual mode again as the fallback stuff
