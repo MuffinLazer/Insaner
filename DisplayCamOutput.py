@@ -1,5 +1,4 @@
 # BEFORE YOU CAN RUN ANY OF THIS ON A RASPBERRY PI, YOU MUST BE ON A PYTHON VM, YOU CAN DO THIS VIA TYPING IN TERMINAL "~/env/bin/activate"
-
 import sys
 import cv2
 import digitalio
@@ -12,26 +11,23 @@ import serial
 from libcamera import Transform
 #All the libarys i need
 
-
 #preps the board and pins to get ready to communicate, kinda important 
 spi = board.SPI()
 
-
 #cs pins is the actual display pin to tell it to show different colors 
-#D22 pin is 17
+#D22 pin is 17 OUTPUT
 cs_pin1 = digitalio.DigitalInOut(board.D22)
 cs_pin1.direction = digitalio.Direction.OUTPUT
 
-#D23 pin is 16
+#D23 pin is 16 OUTPUT
 cs_pin2 = digitalio.DigitalInOut(board.D23)
 cs_pin2.direction = digitalio.Direction.OUTPUT
 
-#D25 is pin 22
+#D25 is pin 22 OUTPUT
 dc_pin = digitalio.DigitalInOut(board.D25)
 dc_pin.direction = digitalio.Direction.OUTPUT
 
-
-#D24 pin is 18 
+#D24 pin is 18 OUTPUT
 reset_pin = digitalio.DigitalInOut(board.D24)
 reset_pin.direction = digitalio.Direction.OUTPUT
 
@@ -40,8 +36,6 @@ sir = serial.Serial('/dev/ttyACM0', 9600, timeout=0.01)
 
 title = "INSANER: INITLIZING"
 #this is for the first boot up before cams boot up
-
-
 Disp1 = st7789.ST7789(
 	spi,
 	cs=cs_pin1,
@@ -65,24 +59,27 @@ Disp2 = st7789.ST7789(
 	x_offset=0,
 	y_offset=0,
 )
-
 #making more varriables for later 
 w1, h1,= Disp1.width, Disp1.height
 w2, h2 = Disp2.width, Disp2.height
 
+#finds the font i want to use and sets its size
 font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 font = ImageFont.truetype(font_path, 20)
 
+#A display screen to show while cameras boot up
 img = Image.new("RGB", (w1,h1), color="black")
 draw = ImageDraw.Draw(img)
 draw.rectangle([0,0, w1,w2], fill=(0,0,0))
 draw.text((0, 130), f"{title}", font=font, fill=(20,150,250))
+#we made title eariler and it displays to the screen
 
+#this is due to hardware limitations, this flips the first screen upright
+imgRotated = img.transpose(Image.ROTATE_180)
 
-
-Disp1.image(img) 
+#displays the verions of the displays for each screen
+Disp1.image(imgRotated) 
 Disp2.image(img) 
-
 
 # W Larp
 print("INITIALZING CAMS")
@@ -127,13 +124,10 @@ print("SYSTEM: ONLINE")
 sensortxt = "DATA NOT FOUND"
 font = ImageFont.load_default() #loading new font
 
-
 #This makes a combined image with overlay brush were everything below overlay brush will apply to overlay
 Overlay = Image.new("RGBA", (w1, h1), (0,0,0,0))
 OverlayBrush = ImageDraw.Draw(Overlay) 
-
 OverlayBrush.rectangle([5, 10, 230, 35], fill=(0,0,0,150))
-
 
 try: 
 	while True: # This while setup checks for new data
@@ -150,7 +144,6 @@ try:
 		frame1 = cam1.capture_array()
 		img1 = Image.fromarray(frame1)
 		
-		
 		#some code is needed to fix the hardware, the display was reading as BRG instead of RGB
 		#What this code does is split the BGR snd aligns it back to RGB
 		r, g, b, = img1.split()
@@ -161,36 +154,30 @@ try:
 		img1 = img1.convert("RGBA")
 		img1 = Image.alpha_composite(img1, Overlay)
 		
-		
 		#This places text from serial/arduino where the overlay is
 		draw1 = ImageDraw.Draw(img1)
 		draw1.text((20, 15), f"DATA: {sensortxt}", font=font, fill=(20,150,250))
 	
 		#this is incase the display swaps for some reason
-		#img1 = img1.transpose(Image.ROTATE_180)
+		img1 = img1.transpose(Image.ROTATE_180)
 	
 		Disp1.image(img1) #displays final image to the screen 
 		#dual mode again as the fallback stuff
 		if dual_mode:		
 			frame2 = cam2.capture_array()
 			img2 = Image.fromarray(frame2)
-	
 			
 			#this is incase the display swaps for some reason
 			# img2 = img2.transpose(Image.ROTATE_180)
 	
-			
 			r, g, b, = img2.split()
 			img2 = Image.merge("RGB", (b, g, r))
-			
 			
 			img2 = img2.convert("RGBA")
 			img2 = Image.alpha_composite(img2, Overlay)
 			
-			
 			draw2 = ImageDraw.Draw(img2)
 			draw2.text((20, 15), f"DATA: {sensortxt}", font=font, fill=(20,150,250))
-	
 	
 			Disp2.image(img2)
 		else:
