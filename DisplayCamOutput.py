@@ -9,7 +9,7 @@ import adafruit_rgb_display.st7789 as st7789
 from picamera2 import Picamera2
 import serial
 from libcamera import Transform
-#All the libarys i need
+#All the libraries I need
 
 #preps the board and pins to get ready to communicate, kinda important 
 spi = board.SPI()
@@ -32,7 +32,7 @@ reset_pin = digitalio.DigitalInOut(board.D24)
 reset_pin.direction = digitalio.Direction.OUTPUT
 
 sir = serial.Serial('/dev/ttyACM0', 9600, timeout=0.01)
-#sir is what we capture from the arduino, /dev/ttyACM0is the port that the arduino speaks through
+#sir is what we capture from the arduino, /dev/ttyACM0 is the port that the arduino speaks through
 
 title = "INSANER: INITLIZING"
 #this is for the first boot up before cams boot up
@@ -59,11 +59,11 @@ Disp2 = st7789.ST7789(
 	x_offset=0,
 	y_offset=0,
 )
-#making more varriables for later 
+#making more variables for later
 w1, h1,= Disp1.width, Disp1.height
 w2, h2 = Disp2.width, Disp2.height
 
-#finds the font i want to use and sets its size
+#finds the font I want to use and sets its size
 font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 font = ImageFont.truetype(font_path, 20)
 
@@ -72,7 +72,7 @@ img = Image.new("RGB", (w1,h1), color="black")
 draw = ImageDraw.Draw(img)
 draw.rectangle([0,0, w1,w2], fill=(0,0,0))
 draw.text((0, 130), f"{title}", font=font, fill=(20,150,250))
-#we made title eariler and it displays to the screen
+#we made title earlier and it displays to the screen
 
 #this is due to hardware limitations, this flips the first screen upright
 imgRotated = img.transpose(Image.ROTATE_180)
@@ -84,14 +84,14 @@ Disp2.image(img)
 # W Larp
 print("INITIALZING CAMS")
 
-#this set of statements is for incase one of the cameras dont work it will duplicate the displays and mirror eachother
+#this set of statements is for incase one of the cameras don't work, it will duplicate the displays and mirror eachother
 try: 
 	cam1 = Picamera2(0)
 	print("CAMERA 1 INITIALIZED")
 except Exception:
 	print("CRITICAL ERROR ON CAMERA ONE, FALLBACK.")
 	sys.exit
-#Dual mode is a boolian we keep track of in order to tell if both cams work or not
+#Dual mode is a boolean we keep track of in order to tell if both cams work or not
 try: 
 	cam2 = Picamera2(1)
 	print("CAMERA 2 INITIALIZED")
@@ -100,9 +100,9 @@ except Exception:
 	print("CRITICAL ERROR ON CAMERA TWO, FALLBACK.")
 	dual_mode = False
 
-# Grabs the template for this varriable 
+# Grabs the template for this variable
 config1 = cam1.create_preview_configuration()
-#rresizes the display to the camera instead of the other way around
+#resizes the display to the camera instead of the other way around
 config1["main"]["size"] = (w1, h1)
 config1["main"]["format"] = "RGB888"
 #boot up things
@@ -124,7 +124,7 @@ print("SYSTEM: ONLINE")
 sensortxt = "DATA NOT FOUND"
 font = ImageFont.load_default() #loading new font
 
-#This makes a combined image with overlay brush were everything below overlay brush will apply to overlay
+#This makes a combined image with overlay brush where everything below overlay brush will apply to overlay
 Overlay = Image.new("RGBA", (w1, h1), (0,0,0,0))
 OverlayBrush = ImageDraw.Draw(Overlay) 
 OverlayBrush.rectangle([5, 10, 230, 35], fill=(0,0,0,150))
@@ -140,7 +140,7 @@ try:
 			except Exception:
 				pass
 				
-		#captures one frame at a time and displays it to the lcd screens, this is the best method i could come up with at the time with these kinda cams and displays		
+		#captures one frame at a time and displays it to the lcd screens, this is the best method I could come up with at the time with these kind of cams and displays
 		frame1 = cam1.capture_array()
 		img1 = Image.fromarray(frame1)
 		
@@ -190,5 +190,5 @@ except KeyboardInterrupt:
 	#this is because we made them overlay earilier
 	if cam1 is not cam2:
 		cam2.stop()
+	# W larps
 	print("PROCESS HALTED")
-		# W larps
