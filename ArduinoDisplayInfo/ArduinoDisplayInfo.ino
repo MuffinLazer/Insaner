@@ -3,11 +3,11 @@
 
 
 DHT11 TempHumidPin(2);
-// attachs this program to this pin 
+// attaches this program to this pin
 
 
 void setup() {
-  // starts communcation for text 
+  // starts communication for text
   Serial.begin(9600);
 }
 
