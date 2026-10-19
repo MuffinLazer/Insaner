@@ -15,6 +15,8 @@ try:
     picam2.configure(camera_config2)
     picam2.start_preview(Preview.QTGL, x=0, y=500, width=400, height=400, transform=Transform(hflip=1))
     picam2.start()
+        while True:
+            time.sleep(1)
 
 except KeyboardInterrupt:
     picam1.close()
