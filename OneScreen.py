@@ -5,11 +5,13 @@ from libcamera import Transform
 
 try:
     picam1 = Picamera2(0)
-    picam1.start_preview(Preview.QTGL)
+    config1 = picam1.create_preview_configuration(lores={"size": (320, 240)}, display="lores")
+    picam1.configure(config1)
     picam1.start()
     
     picam2 = Picamera2(1)
-    picam2.start_preview(Preview.QTGL)
+    config2 = picam2.create_preview_configuration(lores={"size": (320, 240)}, display="lores")
+    picam2.configure(config2)
     picam2.start()
     while True:
         time.sleep(1)
