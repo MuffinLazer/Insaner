@@ -1,5 +1,5 @@
-﻿from picamera2 import Picamera2, Preview
-import time
+﻿import time
+from picamera2 import Picamera2
 
 
 
