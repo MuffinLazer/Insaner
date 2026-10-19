@@ -1,6 +1,7 @@
 ﻿import time
 from picamera2 import Picamera2, Preview
 from libcamera import Transform
+import cv2
 
 
 try:
@@ -14,7 +15,13 @@ try:
     picam2.configure(config2)
     picam2.start()
     while True:
-        time.sleep(1)
+        frame1 = picam1.capture_array()
+        frame2 = picam2.capture array()
+        
+        if frame1 is not None: 
+            cv2.imshow(frame1)
+        if frame2 is not None:
+            cv2.imshow(frame2)
 
 except KeyboardInterrupt:
     picam1.close()
