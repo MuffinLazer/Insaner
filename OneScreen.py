@@ -19,10 +19,8 @@ try:
         frame1 = picam1.capture_array()
         frame2 = picam2.capture_array()
         
-        if frame1 is not None: 
-            cv2.imshow('Cam1', frame1)
-        if frame2 is not None:
-            cv2.imshow('Cam2', frame2)
+        if frame1 & frame2 is not None: 
+            cv2.imshow('CamCombined', frame1,frame2)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
