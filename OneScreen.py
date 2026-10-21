@@ -19,13 +19,10 @@ try:
         frame1 = picam1.capture_array()
         frame2 = picam2.capture_array()
 
-        r, g, b, = frame1.split()
-        frame1 = Image.merge("RGB", (b, g, r))
+        frame1RGB = cv2.cvtColor(frame1, cv2.cvtColor_RGB2BGR)
+        frame2RGB = cv2.cvtColor(frame2, cv2.cvtColor_RGB2BGR)
 
-        r, g, b, = frame2.split()
-        frame2 = Image.merge("RGB", (b, g, r))
-
-        framecombined = cv2.hconcat([frame1, frame2])
+        framecombined = cv2.hconcat([frame1RGB, frame2RGB])
 
         if frame1 & frame2 is not None: 
             cv2.imshow('CamCombined', framecombined)
