@@ -15,6 +15,13 @@ try:
     config2 = picam2.create_preview_configuration(lores={"size": (320, 240)}, display="lores")
     picam2.configure(config2)
     picam2.start()
+
+    WindowName = "CAMS"
+    cv2.namedWindow(WindowName, cv2.WINDOW_NORMAL)
+    cv2.setWindowProperty(WindowName, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+
+
     while True:
         frame1 = picam1.capture_array()
         frame2 = picam2.capture_array()
@@ -25,7 +32,7 @@ try:
         framecombined = cv2.hconcat([frame1RGB, frame2RGB])
 
         if frame1 & frame2 is not None: 
-            cv2.imshow('CamCombined', framecombined)
+            cv2.imshow(WindowName, FrameStripped)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
