@@ -19,8 +19,8 @@ try:
         frame1 = picam1.capture_array()
         frame2 = picam2.capture_array()
 
-        frame1RGB = cv2.cvtColor(frame1, cv2.cvtCOLOR_RGB2BGR)
-        frame2RGB = cv2.cvtColor(frame2, cv2.cvtCOLOR_RGB2BGR)
+        frame1RGB = cv2.cvtColor(frame1, cv2.COLOR_RGB2BGR)
+        frame2RGB = cv2.cvtColor(frame2, cv2.COLOR_RGB2BGR)
 
         framecombined = cv2.hconcat([frame1RGB, frame2RGB])
 
