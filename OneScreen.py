@@ -18,9 +18,11 @@ try:
     while True:
         frame1 = picam1.capture_array()
         frame2 = picam2.capture_array()
-        
+
+        framecombined = cv2.hconcat([frame1, frame2])
+
         if frame1 & frame2 is not None: 
-            cv2.imshow('CamCombined', frame1,frame2)
+            cv2.imshow('CamCombined', framecombined)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
