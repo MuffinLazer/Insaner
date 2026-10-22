@@ -59,7 +59,7 @@ try:
 
                 if sensortxt: #if we get data, it outputs it onto the onescreen using "putText"
                     cv2.putText(framecombined, f"SENSOR DATA: {sensortxt}", (10,30),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (40, 120, 255), 2)
 
                 cv2.imshow(WindowName, framecombined)
 
