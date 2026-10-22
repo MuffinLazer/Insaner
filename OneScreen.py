@@ -70,10 +70,10 @@ try:
                 framecombined = cv2.hconcat([frame1RGB, frame2RGB]) # combining the frames for one screen
 
                 if sensortxt: #if we get data, it outputs it onto the onescreen using "putText"
-                    cv2.putText(framecombined, f"SENSOR DATA: {sensortxt}", (25,30),
+                    cv2.putText(framecombined, f"SENSOR DATA: {sensortxt}", (10,30),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 120, 40), 2)
                     
-                cv2.putText(framecombined, f"FPS: {fpsdisplay}", (530 ,30),
+                cv2.putText(framecombined, f"FPS: {fpsdisplay}", (1175 ,30),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 120, 40), 2)
                 
                 cv2.imshow(WindowName, framecombined)
