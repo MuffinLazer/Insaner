@@ -26,9 +26,23 @@ def readserial(): # this is a better way to read serial as it runs a fuction tha
     except Exception as error: # funny new way i learned how to do error catching as it will read the error and display it
          print(f"ERROR: {error}")
 
+def fpstimer():
+    global fps
+    try:
+        fps = fps/60
+        time.sleep(60)
+    except Exception:
+        pass
+    
+
 SerialThread = threading.Thread(target=readserial, daemon=True) #this calls the function from eariler (readserial), and runs it on another cpu thread in order to help the rest of the program run faster, daemon means it will shut itself off after main program is done
 SerialThread.start() # this is kinda self explainitory
 print("BACKGROUND THREAD ONLINE:")
+
+FPSThread = threading.Thread(target=fpstimer, daemon=True)
+FPSThread.start()
+print("FPS COUNTER ONLINE:")
+
 try:
     picam1 = Picamera2(0)
     config1 = picam1.create_preview_configuration(lores={"size": (512, 300)}, display="lores")
@@ -63,8 +77,10 @@ try:
                 if sensortxt: #if we get data, it outputs it onto the onescreen using "putText"
                     cv2.putText(framecombined, f"SENSOR DATA: {sensortxt}", (10,30),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 120, 40), 2)
-                cv2.putText(framecombined, f"FPS: {fps}", (100,300),
+                    
+                cv2.putText(framecombined, f"FPS: {fps}", (50,300),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 120, 40), 2)
+                
                 cv2.imshow(WindowName, framecombined)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
