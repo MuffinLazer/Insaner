@@ -4,13 +4,13 @@ from picamera2 import Picamera2, Preview
 from libcamera import Transform
 import cv2
 import serial
+import threading
 sensortxt = ""
-sensorlock = threading.Lock()
 
 def readserial():
     global sensortxt
     try:
-        data = serial.Serial('/dev/ttyACM0', 9600, timeout=0.01)
+        data = serial.Serial('/dev/ttyACM0', 9600, timeout=1.0)
         while True:
                 if data.in_waiting > 0:
                     try:
@@ -26,6 +26,7 @@ def readserial():
 
 SerialThread = threading.Thread(target=readserial, daemon=True)
 SerialThread.start()
+
 try:
     picam1 = Picamera2(0)
     config1 = picam1.create_preview_configuration(lores={"size": (512, 300)}, display="lores")
@@ -35,10 +36,10 @@ try:
     config2 = picam2.create_preview_configuration(lores={"size": (512, 300)}, display="lores")
     picam2.configure(config2)
 
-    time.sleep(2)
-
     picam1.start()
     picam2.start()
+
+    time.sleep(2)
 
     WindowName = "CAMS"
     cv2.namedWindow(WindowName, cv2.WINDOW_NORMAL)
@@ -50,7 +51,7 @@ try:
             frame1 = picam1.capture_array()
             frame2 = picam2.capture_array()
             
-            if frame1 & frame2 is not None: 
+            if frame1 is not None and frame2 is not None:
                 frame1RGB = cv2.cvtColor(frame1, cv2.COLOR_RGB2BGR)
                 frame2RGB = cv2.cvtColor(frame2, cv2.COLOR_RGB2BGR)
 
@@ -60,7 +61,7 @@ try:
                     cv2.putText(framecombined, f"SENSOR DATA: {sensortxt}", (10,30),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
-                    cv2.imshow(WindowName, framecombined)
+                cv2.imshow(WindowName, framecombined)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
