@@ -6,7 +6,8 @@ import cv2
 import serial
 import threading
 sensortxt = ""
-fps = 0
+fpscounter = 0
+fpsdisplay = 0
 #libary slop 2 eletric boogaloo
 
 def readserial(): # this is a better way to read serial as it runs a fuction that outputs a global string
@@ -27,12 +28,11 @@ def readserial(): # this is a better way to read serial as it runs a fuction tha
          print(f"ERROR: {error}")
 
 def fpstimer():
-    global fps
-    try:
-        fps = fps/60
-        time.sleep(60)
-    except Exception:
-        pass
+    global fpscounter, fpsdisplay
+    while True:
+        time.sleep(1.0)
+        fpsdisplay = fps_counter
+        fps_counter = 0
     
 
 SerialThread = threading.Thread(target=readserial, daemon=True) #this calls the function from eariler (readserial), and runs it on another cpu thread in order to help the rest of the program run faster, daemon means it will shut itself off after main program is done
@@ -85,6 +85,7 @@ try:
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break #this reads for the letter q to kill the screens
+            
 
 except KeyboardInterrupt: #this is so it can be shut down from terminal as well
     print("SHUTTING DOWN")
