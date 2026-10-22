@@ -31,8 +31,8 @@ def fpstimer():
     global fpscounter, fpsdisplay
     while True:
         time.sleep(1.0)
-        fpsdisplay = fps_counter
-        fps_counter = 0
+        fpsdisplay = fpscounter
+        fpscounter = 0
     
 
 SerialThread = threading.Thread(target=readserial, daemon=True) #this calls the function from eariler (readserial), and runs it on another cpu thread in order to help the rest of the program run faster, daemon means it will shut itself off after main program is done
@@ -66,7 +66,7 @@ try:
             frame1 = picam1.capture_array()
             frame2 = picam2.capture_array() #these just capture raw frames from the cams
             
-            fps+= 1
+            fpscounter+= 1
             
             if frame1 is not None and frame2 is not None:
                 frame1RGB = cv2.cvtColor(frame1, cv2.COLOR_RGB2BGR)
@@ -78,7 +78,7 @@ try:
                     cv2.putText(framecombined, f"SENSOR DATA: {sensortxt}", (10,30),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 120, 40), 2)
                     
-                cv2.putText(framecombined, f"FPS: {fps}", (50,300),
+                cv2.putText(framecombined, f"FPS: {fpsdisplay}", (50,300),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 120, 40), 2)
                 
                 cv2.imshow(WindowName, framecombined)
