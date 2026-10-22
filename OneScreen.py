@@ -6,6 +6,7 @@ import cv2
 import serial
 import threading
 sensortxt = ""
+fps = 0
 #libary slop 2 eletric boogaloo
 
 def readserial(): # this is a better way to read serial as it runs a fuction that outputs a global string
@@ -51,6 +52,8 @@ try:
             frame1 = picam1.capture_array()
             frame2 = picam2.capture_array() #these just capture raw frames from the cams
             
+            fps+= 1
+            
             if frame1 is not None and frame2 is not None:
                 frame1RGB = cv2.cvtColor(frame1, cv2.COLOR_RGB2BGR)
                 frame2RGB = cv2.cvtColor(frame2, cv2.COLOR_RGB2BGR) # this is becuse cv2 takes in BGR because it is OLDDDD
@@ -60,7 +63,8 @@ try:
                 if sensortxt: #if we get data, it outputs it onto the onescreen using "putText"
                     cv2.putText(framecombined, f"SENSOR DATA: {sensortxt}", (10,30),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 120, 40), 2)
-
+                cv2.putText(framecombined, f"FPS: {fps}", (100,300),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 120, 40), 2)
                 cv2.imshow(WindowName, framecombined)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
