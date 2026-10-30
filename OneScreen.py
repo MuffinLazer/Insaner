@@ -56,8 +56,11 @@ try:
 
     WindowName = "CAMS"
     cv2.namedWindow(WindowName, cv2.WINDOW_NORMAL) 
+    cv2.moveWindow(WindowName, 0, 0)
     cv2.setWindowProperty(WindowName, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     # this creates a window that goes by the name "CAMS" so that it takes up the full screen, the first line creates the window idifeir identifier while the next line forces it into fullscreen mode
+    
+    
     while True:
             frame1 = picam1.capture_array()
             frame2 = picam2.capture_array() #these just capture raw frames from the cams
@@ -68,15 +71,16 @@ try:
                 frame2RGB = cv2.cvtColor(frame2, cv2.COLOR_RGB2BGR) # this is becuse cv2 takes in BGR because it is OLDDDD
 
                 framecombined = cv2.hconcat([frame1RGB, frame2RGB]) # combining the frames for one screen
-
+                framefinal = cv2.resize(framecombined, (1024,600), interpolation=cv2.INTER_LINEAR)
+				
                 if sensortxt: #if we get data, it outputs it onto the onescreen using "putText"
-                    cv2.putText(framecombined, f"SENSOR DATA: {sensortxt}", (10,30),
+                    cv2.putText(framefinal, f"SDATA: {sensortxt}", (10,30),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 120, 40), 2)
                     
-                cv2.putText(framecombined, f"FPS: {fpsdisplay}", (1175 ,30),
+                cv2.putText(framefinal, f"FPS: {fpsdisplay}", (920 ,30),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 120, 40), 2)
                 
-                cv2.imshow(WindowName, framecombined)
+                cv2.imshow(WindowName, framefinal)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break #this reads for the letter q to kill the screens
             
